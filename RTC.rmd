@@ -1,0 +1,134 @@
+---
+title: "Upper Klamath and Lost Subbasins Temperature TMDL and Water Quality Management Plan"
+subtitle: "Response to Public Comments"
+output:
+  word_document:
+    reference_docx: E:/GitHub/RTC/Report_Template.docx
+    toc: TRUE
+    fig_caption: true
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning=FALSE,
+                      error = TRUE,
+                      cache = FALSE,
+                      cache.comments = FALSE,
+                      include = TRUE,
+                      autodep = TRUE,
+                      fig.height = 6,
+                      eval = TRUE
+                      )
+
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(kableExtra)
+library(captioner)
+
+tbls  <- captioner(prefix="Table")
+
+```
+
+```{r inputs}
+
+# Needs to run from local directory
+setwd("E:/GitHub/RTC/")
+
+sc.xlsx <- "suggested_changes_download_2019.09.19.xlsx"
+
+sc.cols <- c("Comment_Number", "Title", "Comment", "Response", "Response_Type", "Assigned_To", "Status", 
+             "Action_Needed", "Rule_Change", "Commenter","Num_Comments","Num_Commenters", "ID", "Comment_Text","Notes")  
+
+sc.col.type <- c("numeric","text","text","text","text","text","text",
+                 "text","logical","text","numeric","numeric","numeric","text","text")
+
+
+cm.xlsx <- "commenters_download_2019.09.19.xlsx"
+
+cm.cols <- c("Commenter","Comment_Period","DASID","First_Name","Last_Name","Email","Organization",
+             "State","Comment_Text","Attachment_Name", "Attachment_URL", "CARA.URL", "Manually_Entered", "Num_Commenters", 
+             "Summary", "Status","Notes","Comment_Number", "ID")
+
+cm.col.type <- c("numeric","text","numeric","text","text","text","text",
+                 "text","text","text","text","text","logical", "numeric",
+                 "text","text","text","text", "numeric")
+
+df.sc1 <- read_excel(sc.xlsx, col_names = sc.cols, skip=1, col_types = sc.col.type, na=c(""), trim_ws=TRUE)
+df.cm1 <- read_excel(cm.xlsx, col_names = cm.cols, skip=1, col_types = cm.col.type, na=c(""), trim_ws=TRUE)
+
+df.cm2 <- df.cm1 %>%
+  dplyr::select(Commenter, Organization) %>%
+  dplyr::mutate(Org_Acronym=str_replace_all(Organization, c("the"="",
+                                                   "of"="",
+                                                   "and"="-"))) %>%
+  dplyr::mutate(Org_Acronym=abbreviate(Org_Acronym, use.classes = TRUE, minlength=2, dot=FALSE))%>%
+  dplyr::mutate(Org_Acronym=gsub("USDIBR","BOR",Org_Acronym))
+
+df.sc2 <- df.sc1 %>%
+  dplyr::select(Comment_Number, Title, Comment, Response, Commenter, ID) %>%
+  separate_rows(Commenter, sep = ", ", convert=TRUE) %>%
+  dplyr::left_join(df.cm2,by="Commenter") %>%
+  dplyr::arrange(Commenter, ID)
+
+
+n.cm <- nrow(df.cm2)
+
+n.sc <- nrow(df.sc1)
+
+# Does not check for any NAs or suggested changes that still need to be made.
+n.tmdl.mods <- df.sc1 %>%
+  dplyr::filter(Response_Type=="Yes, changes were made to TMDL/WQMP") %>%
+  nrow()
+
+```
+
+# Introduction
+
+This Response to Public Comments document addresses comments and questions received regarding the Draft Upper Klamath and Lost Subbasins Temperatue Total Maximum Daily Load (TMDL) and Water Quality Management Plan (WQMP) dated May, 2019.  The individuals and organizations shown in `r tbls(name='tbl.commenters', display='cite')` provided comments on the Draft Upper Klamath and Lost Subbasins Temperature TMDL/WQMP during the Public Comment Period which was held from May 15 through July 15, 2019.  On June 26, 2019 a public hearing was held in Klamath Falls, OR.  All comments received during the public comment period have been reviewed by DEQ and addressed in this document. Comments which required modifications to the TMDL or WQMP are noted. In total there were `r n.sc` unique comments from `r n.cm` entities. DEQ made modifications to the TMDL and WQMP based on `r n.tmdl.mods` of the comments
+
+```{r commenters-table1, results = 'asis'}
+
+knitr::kable(df.cm2, format = "pandoc", padding = 2, digits = 1,
+             col.names = c("Commenter #", "Commenter", "Acronym"),
+             caption = tbls(name="tbl.commenters",
+                            caption="Commenters on the May 2019 Draft Upper Klamath and Lost Subbasins Temperature TMDL and WQMP."))
+
+```
+
+
+```{r Comments-Responses, results = 'asis'}
+
+for(i in 1:nrow(df.cm2)) {
+  
+  commenter_name <- df.cm2[i,"Organization", drop=TRUE ]
+  commenter_acronym <- df.cm2[i,"Org_Acronym", drop=TRUE]
+  
+  cat(paste("# Comments from: ",commenter_name))
+  cat(" \n\n")
+  
+  df.sc2.i <- df.sc2 %>%
+    dplyr::filter(Org_Acronym==commenter_acronym)
+
+  for(row in 1:nrow(df.sc2.i)){
+    
+    comment_number <- df.sc2.i[row,"Comment_Number", drop=TRUE]
+    comment_title <- df.sc2.i[row,"Title", drop=TRUE]
+    comment <- df.sc2.i[row,"Comment", drop=TRUE]
+    response <- df.sc2.i[row,"Response", drop=TRUE]
+    
+    cat(paste0(commenter_acronym,"#",row,": Suggested Change ID #",comment_number," \n\n"))
+    cat(paste0("**Description: ",comment_title,"** \n\n"))
+    cat(paste0("**Comment:** ",comment," \n\n"))
+    cat(paste0("**Response:**  ",response," \n\n"))
+    cat("---")
+    cat(" \n\n")
+  }
+  
+}
+
+```

@@ -1,0 +1,6 @@
+*.xlsx
+*.csv
+*.txt
+*.Rproj*
+.Rhistory
+RTC.docx
