@@ -1,9 +1,9 @@
 ---
-title: "Upper Klamath and Lost Subbasins Temperature TMDL and Water Quality Management Plan"
+title: "2018/2020 water Quality Report and list of Water Quality Limited Waters"
 subtitle: "Response to Public Comments"
 output:
   word_document:
-    reference_docx: E:/GitHub/RTC/Report_Template.docx
+    reference_docx: Report_Template.docx
     toc: TRUE
     fig_caption: true
 always_allow_html: yes
@@ -37,9 +37,9 @@ tbls  <- captioner(prefix="Table")
 ```{r inputs}
 
 # Needs to run from local directory
-setwd("E:/GitHub/RTC/")
+#setwd("E:/GitHub/RTC/")
 
-sc.xlsx <- "suggested_changes_download_2019.09.19.xlsx"
+sc.xlsx <- "suggested_changes.xlsx"
 
 sc.cols <- c("Comment_Number", "Title", "Comment", "Response", "Response_Type", "Assigned_To", "Status", 
              "Action_Needed", "Rule_Change", "Commenter","Num_Comments","Num_Commenters", "ID", "Comment_Text","Notes")  
@@ -48,7 +48,7 @@ sc.col.type <- c("numeric","text","text","text","text","text","text",
                  "text","logical","text","numeric","numeric","numeric","text","text")
 
 
-cm.xlsx <- "commenters_download_2019.09.19.xlsx"
+cm.xlsx <- "comments.xlsx"
 
 cm.cols <- c("Commenter","Comment_Period","DASID","First_Name","Last_Name","Email","Organization",
              "State","Comment_Text","Attachment_Name", "Attachment_URL", "CARA.URL", "Manually_Entered", "Num_Commenters", 
@@ -62,12 +62,14 @@ df.sc1 <- read_excel(sc.xlsx, col_names = sc.cols, skip=1, col_types = sc.col.ty
 df.cm1 <- read_excel(cm.xlsx, col_names = cm.cols, skip=1, col_types = cm.col.type, na=c(""), trim_ws=TRUE)
 
 df.cm2 <- df.cm1 %>%
+  dplyr::mutate(Organization = ifelse(is.na(Organization), paste(First_Name, Last_Name),Organization )) %>%
   dplyr::select(Commenter, Organization) %>%
   dplyr::mutate(Org_Acronym=str_replace_all(Organization, c("the"="",
                                                    "of"="",
                                                    "and"="-"))) %>%
   dplyr::mutate(Org_Acronym=abbreviate(Org_Acronym, use.classes = TRUE, minlength=2, dot=FALSE))%>%
-  dplyr::mutate(Org_Acronym=gsub("USDIBR","BOR",Org_Acronym))
+  dplyr::mutate(Org_Acronym=gsub("USDIBR","BOR",Org_Acronym)) %>%
+  dplyr::mutate(Org_Acronym = make.unique(Org_Acronym, sep = "."))
 
 df.sc2 <- df.sc1 %>%
   dplyr::select(Comment_Number, Title, Comment, Response, Commenter, ID) %>%
@@ -89,7 +91,7 @@ n.tmdl.mods <- df.sc1 %>%
 
 # Introduction
 
-This Response to Public Comments document addresses comments and questions received regarding the Draft Upper Klamath and Lost Subbasins Temperatue Total Maximum Daily Load (TMDL) and Water Quality Management Plan (WQMP) dated May, 2019.  The individuals and organizations shown in `r tbls(name='tbl.commenters', display='cite')` provided comments on the Draft Upper Klamath and Lost Subbasins Temperature TMDL/WQMP during the Public Comment Period which was held from May 15 through July 15, 2019.  On June 26, 2019 a public hearing was held in Klamath Falls, OR.  All comments received during the public comment period have been reviewed by DEQ and addressed in this document. Comments which required modifications to the TMDL or WQMP are noted. In total there were `r n.sc` unique comments from `r n.cm` entities. DEQ made modifications to the TMDL and WQMP based on `r n.tmdl.mods` of the comments
+This Response to Public Commetns document addresses comments and questions received regarding the Draft Draft 2018/2020 Water Quality Report and List of Water Quality Limited Waters (2018/2020 Integrated Report).  The individuals and organizations shown in `r tbls(name='tbl.commenters', display='cite')` provided comments on the 2018/2020 Integgrated Report during the Public Comment Period which was held from September 30, 2019 through January 6, 2020.  All comments received during the public comment period have been reviewed by DEQ and addressed in this document. Comments which required modifications to the report are noted. In total there were `r n.sc` unique comments from `r n.cm` entities. DEQ made modifications to the report based on `r n.tmdl.mods` of the comments
 
 ```{r commenters-table1, results = 'asis'}
 
