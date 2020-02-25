@@ -1,6 +1,6 @@
 ---
 title: "2018/2020 water Quality Report and list of Water Quality Limited Waters"
-subtitle: "Response to Public Comments"
+subtitle: "Response to Public Comments on Draft Report"
 output:
   word_document:
     reference_docx: Report_Template.docx
@@ -84,7 +84,7 @@ n.sc <- nrow(df.sc1)
 
 # Does not check for any NAs or suggested changes that still need to be made.
 n.tmdl.mods <- df.sc1 %>%
-  dplyr::filter(Response_Type=="Yes, changes were made to TMDL/WQMP") %>%
+  dplyr::filter(Response_Type %in% c("Yes, we made changes to address this comment", 'Yes, the change needs to be incorporated into the report')) %>%
   nrow()
 
 ```
@@ -98,7 +98,7 @@ This Response to Public Commetns document addresses comments and questions recei
 knitr::kable(df.cm2, format = "pandoc", padding = 2, digits = 1,
              col.names = c("Commenter #", "Commenter", "Acronym"),
              caption = tbls(name="tbl.commenters",
-                            caption="Commenters on the May 2019 Draft Upper Klamath and Lost Subbasins Temperature TMDL and WQMP."))
+                            caption="Commenters on the 2018/2020 Water Quality Report and List of Water Quality Limited Waters "))
 
 ```
 
