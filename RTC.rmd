@@ -91,7 +91,7 @@ n.tmdl.mods <- df.sc1 %>%
 
 # Introduction
 
-This Response to Public Commetns document addresses comments and questions received regarding the Draft Draft 2018/2020 Water Quality Report and List of Water Quality Limited Waters (2018/2020 Integrated Report).  The individuals and organizations shown in `r tbls(name='tbl.commenters', display='cite')` provided comments on the 2018/2020 Integgrated Report during the Public Comment Period which was held from September 30, 2019 through January 6, 2020.  All comments received during the public comment period have been reviewed by DEQ and addressed in this document. Comments which required modifications to the report are noted. In total there were `r n.sc` unique comments from `r n.cm` entities. DEQ made modifications to the report based on `r n.tmdl.mods` of the comments
+BLAH BLAH BLAH This Response to Public Comments document addresses comments and questions received regarding the Draft Draft 2018/2020 Water Quality Report and List of Water Quality Limited Waters (2018/2020 Integrated Report).  The individuals and organizations shown in `r tbls(name='tbl.commenters', display='cite')` provided comments on the 2018/2020 Integrated Report during the Public Comment Period which was held from September 30, 2019 through January 6, 2020.  All comments received during the public comment period have been reviewed by DEQ and addressed in this document. Comments which required modifications to the report are noted. In total there were `r n.sc` unique comments from `r n.cm` entities. DEQ made modifications to the report based on `r n.tmdl.mods` of the comments
 
 ```{r commenters-table1, results = 'asis'}
 
